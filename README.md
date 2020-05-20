@@ -1,4 +1,4 @@
-# Node-Backend
+# NodeBackend-Static
 A backend Server for serving static websites handling requests.
 
 ## Technology Stack
