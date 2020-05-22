@@ -1,18 +1,30 @@
 const mongoose=require('mongoose');
 const orderSchema=mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
-    clientName: 
+    client: 
     {
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required:true
     },
-    orderName:
+    pizza:
     {
-        type:String,
-
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'Pizza',
+        required:true
     },
-    amount:
+    count:
     {
-        type:Number
+        type:Number,
+        default: 1
+    },
+    totalPrice:{
+        type:Number,
+        default: 0
+    },
+    time:{
+        type:Date,
+        default: Date.now(),
     }
 });
 
