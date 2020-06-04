@@ -23,6 +23,12 @@ app.use(express.static("public"));
 //app.get(endpoint,callback);
 
 
+let count=0;
+app.get('*',function(req,res,next)
+{
+    count++;
+    next();
+})
 
 //routes
 const orders=require('./routes/orders');
@@ -40,7 +46,7 @@ app.use('/pizzas',pizzas);
 app.get('/',function(req,res)
 {
 
-    res.sendFile(__dirname+'/index.html');
+    res.send("Home");
 })
 
 app.get('/newpage',function(req,res)
@@ -54,6 +60,11 @@ app.post('/formdata',function(req,res)
     console.log(req.body);
 })
 
+
+app.get('/count',function(req,res)
+{
+    res.send(count.toString()).status(204);
+})
 
 app.listen(8000,function()
 {

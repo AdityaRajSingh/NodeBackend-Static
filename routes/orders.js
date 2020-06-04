@@ -2,7 +2,7 @@ const express=require('express');
 const router=express.Router();
 const mongoose=require('mongoose');
 const orderModel=require('../models/orderModel');
-// 
+ 
 router.get('/',function(req,res)
 {
     orderModel.find()
@@ -12,7 +12,7 @@ router.get('/',function(req,res)
     })
 })
 
-router.post('/',function(req,res)
+router.post('/',auth,function(req,res)
 {
     const newOrder= new orderModel({
         _id:new mongoose.Types.ObjectId(),

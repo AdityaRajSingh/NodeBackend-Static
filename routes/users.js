@@ -2,6 +2,12 @@ const express=require('express');
 const router=express.Router();
 const mongoose=require('mongoose');
 const userModel=require('../models/userModel');
+const bcryptjs=require('bcryptjs');
+const jwt=require('jsonwebtoken');
+
+const auth=require('../auth')
+
+const saltRounds=10;
 
 router.get('/',function(req,res)
 {
@@ -14,18 +20,55 @@ router.get('/',function(req,res)
 
 router.post('/',function(req,res)
 {
+
     const newUser= new userModel({
         _id:new mongoose.Types.ObjectId(),
         name: req.body.name,    
         email: req.body.email,
+        password: bcryptjs.hashSync(req.body.password,saltRounds)
     });
     newUser.save()
     .then(data=>{res.json(data).status(201);})
     .catch(err=>{res.json(err).status(500);})
 })
 
+router.post('/login',function(req,res){
+    userModel.findOne({email:req.body.email})
+    .exec()
+    .then(user=>{
+        if(user==null)
+        {
+            res.send("Sorry The User Doesnt Exist. Kindly SignUp first").status(401);
+        }
+        else{
+           if(bcryptjs.compareSync(req.body.password,user.password))
+           {
+            const token=jwt.sign(
+                {
+                    email:user.email,
+                    _id:user._id
+                },
+                'lenovo',
+                {
+                    expiresIn: '1h'
+                }
+            );
 
-router.get('/:userID',function(req,res)
+            res.json(
+                {
+                    "message":"Auth Successful",
+                    "token":token
+                }
+            ).status(200);
+           }
+           else{
+            res.send("Sorry,Auth Failed").status(401);
+           }
+        }
+    })
+});
+
+router.get('/:userID',auth,function(req,res)
 {
     
     const id=req.params.userID;
@@ -37,7 +80,7 @@ router.get('/:userID',function(req,res)
         })
 })
 
-router.put('/:userID',function(req,res)
+router.put('/:userID',auth,function(req,res)
 {
     const id=req.params.userID;
     const newEmail=req.body.email;
